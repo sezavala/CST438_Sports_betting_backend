@@ -7,10 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-// User information format
-public class UserView {
+// Google information format
+public class GoogleUserInfo {
     private String id;
     private String email;
     private String name;
+    private boolean emailVerified;
     // Optional pictureUrl: String
 }

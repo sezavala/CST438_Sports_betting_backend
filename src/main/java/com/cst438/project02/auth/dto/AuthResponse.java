@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+// Authentication response format
 public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
