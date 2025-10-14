@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 // @RestController used for all controllers
 // @RequestMapping sets the base path for our class
 // @RequiredArgsConstructor generates a constructor for all required arguments like AuthService
@@ -22,7 +25,7 @@ public class AuthController {
     @PostMapping("/google")
     // Use RequestBody to take the JSON in the HTTP body
     // @Valid confirms the Bean validation (NotBlank) idToken from GoogleLoginRequest
-    public AuthResponse googleLoginRequest(@RequestBody @Valid GoogleLoginRequest request) {
+    public AuthResponse googleLoginRequest(@RequestBody @Valid GoogleLoginRequest request) throws GeneralSecurityException, IOException {
         return authService.loginWithGoogle(request);
     }
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+// Google login request format
 public class GoogleLoginRequest {
 
     @NotBlank
