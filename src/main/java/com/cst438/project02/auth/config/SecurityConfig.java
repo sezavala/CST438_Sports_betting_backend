@@ -17,8 +17,9 @@ public class SecurityConfig {
         // Filter Chain to allow anyone to access to the Google Auth route.
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/v1/auth/google").permitAll();
+                    auth.requestMatchers("/api/v1/auth/**").permitAll();
                     auth.requestMatchers("/error").permitAll();
+                    auth.requestMatchers("https://developers.google.com/oauthplayground/*").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 // Since our application is stateless, we wouldn't need CSRF protection
