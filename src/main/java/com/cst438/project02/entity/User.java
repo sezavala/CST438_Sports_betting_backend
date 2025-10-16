@@ -1,4 +1,4 @@
-package com.CST438.Project02.Project02.entity;
+package com.cst438.project02.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
