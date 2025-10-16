@@ -1,4 +1,4 @@
-package com.CST438.Project02.CST438.Project02;
+package com.cst438.project02.entity;
 
 import jakarta.persistence.*;
 

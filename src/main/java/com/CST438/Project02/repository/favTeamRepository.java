@@ -1,5 +1,6 @@
-package com.CST438.Project02.CST438.Project02;
+package com.cst438.project02.repository;
 
+import com.cst438.project02.entity.favTeam;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
