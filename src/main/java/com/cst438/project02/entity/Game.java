@@ -1,12 +1,7 @@
 package com.cst438.project02.entity;
 import java.time.LocalDateTime;
- 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "games")
@@ -26,6 +21,10 @@ public class Game {
     private int scoreHome;
     @Column(nullable = false)
     private int scoreAway;
+
+    @ManyToOne
+    @JoinColumn(name = "home_team_id")
+    private Team homeTeam;
 
     public Game() {}
 

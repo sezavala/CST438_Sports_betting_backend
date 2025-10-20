@@ -21,13 +21,16 @@ public class Team {
 
     @Column(nullable = false)
     private String name;
+
     @Column(nullable = false)
     private String sport;
+
     @Column(nullable = false)
     private String city;
-    @Column(nullable = false)
+
     @OneToMany(mappedBy = "homeTeam")
-    private List<Game> games;
+    private List<Game> homeGames;
+
 
     public Team() {}
 
@@ -36,6 +39,7 @@ public class Team {
         this.sport = sport;
         this.city = city;
     }
+
     public Long getId() {
         return id;
     }
