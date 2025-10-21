@@ -1,4 +1,4 @@
-package com.CST438.Project02.CST438.Project02;
+package com.cst438.project02.CST438.Project02;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -29,8 +29,8 @@ public class AuthService {
         user.setName(userInfo.getName());
 
         AuthResponse response = new AuthResponse();
-        response.setAccessToken(null);
-        response.setExpiresIn(0);
+        response.setAccessToken(jwtToken);
+        response.setExpiresIn(jwtUtil.getJwtExpirationMs());
         response.setUser(user);
         return response;
     }

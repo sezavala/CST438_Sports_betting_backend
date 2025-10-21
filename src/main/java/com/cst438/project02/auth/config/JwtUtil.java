@@ -13,10 +13,11 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}")
+    @Value("${jwt.SECRET}")
     private String jwtSecret;
-    @Value("${jwt.expiration}")
-    private int jwtExpirationMs;
+    @Getter
+    @Value("${jwt.EXPIRATION}")
+    private long jwtExpirationMs;
     private SecretKey key;
 
     // Initializes key after class is instantiated
@@ -70,7 +71,4 @@ public class JwtUtil {
         }
     }
 
-    public long getJwtExpirationMs () {
-        return jwtExpirationMs;
-    }
 }
