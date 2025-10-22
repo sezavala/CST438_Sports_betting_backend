@@ -19,8 +19,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    // Map to existing NOT NULL column 'password'
-    @Column(name = "password", nullable = false, length = 100)
+    // Map to existing column 'password' (nullable for OAuth-only users)
+    @Column(name = "password", nullable = true, length = 100)
     private String passwordHash;
 
     @Column(unique = true)
