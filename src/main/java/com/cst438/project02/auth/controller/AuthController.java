@@ -2,13 +2,12 @@ package com.cst438.project02.auth.controller;
 
 import com.cst438.project02.auth.dto.AuthResponse;
 import com.cst438.project02.auth.dto.GoogleLoginRequest;
+import com.cst438.project02.auth.dto.RegisterRequest;
 import com.cst438.project02.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -25,7 +24,23 @@ public class AuthController {
     @PostMapping("/google")
     // Use RequestBody to take the JSON in the HTTP body
     // @Valid confirms the Bean validation (NotBlank) idToken from GoogleLoginRequest
-    public AuthResponse googleLoginRequest(@RequestBody @Valid GoogleLoginRequest request) throws GeneralSecurityException, IOException {
-        return authService.loginWithGoogle(request);
+    public AuthResponse googleLogin(@RequestBody @Valid GoogleLoginRequest request)
+            throws GeneralSecurityException, IOException {
+        if (request.getAuthorizationCode() != null) {
+            return authService.loginWithGoogleCode(request.getAuthorizationCode(), request.getCodeVerifier());
+        }
+        return authService.loginWithGoogle(request); // uses idToken
+    }
+
+    @GetMapping("/google/callback")
+    public ResponseEntity<String> googleCallback(@RequestParam String code,
+                                                 @RequestParam(required = false) String state) throws Exception {
+        authService.loginWithGoogleCode(code, null);
+        return ResponseEntity.ok("Login successful");
+    }
+
+    @PostMapping("/register")
+    public AuthResponse register(@RequestBody @Valid RegisterRequest request) {
+        return authService.register(request);
     }
 }
