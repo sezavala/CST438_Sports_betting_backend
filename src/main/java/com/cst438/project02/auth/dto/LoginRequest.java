@@ -8,12 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-// Google login request format
-public class GoogleLoginRequest {
+public class LoginRequest {
+    @NotBlank
+    private String username;
 
     @NotBlank
-    private String idToken;
-
-    private String authorizationCode;
-    private String codeVerifier;
+    private String password;
 }
