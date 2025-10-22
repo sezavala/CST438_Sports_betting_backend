@@ -1,8 +1,8 @@
 package com.cst438.project02.auth.service;
 
+import com.cst438.project02.auth.config.JwtUtil;
 import com.cst438.project02.auth.dto.*;
 import com.cst438.project02.auth.infra.GoogleTokenVerifier;
-import com.cst438.project02.auth.config.JwtUtil;
 import com.cst438.project02.entity.User;
 import com.cst438.project02.repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -24,21 +24,57 @@ public class AuthService {
 
     private final GoogleTokenVerifier googleTokenVerifier;
     private final JwtUtil jwtUtil;
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${spring.security.oauth2.client.registration.google.client-id}") String clientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    String clientId;
 
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}") String clientSecret; // optional when using PKCE
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    String clientSecret; // optional when using PKCE
 
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") String redirectUri;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    String redirectUri;
 
     private final RestClient restClient = RestClient.builder().build();
 
+    // ---------- Local (non-OAuth) auth ----------
+
+    public AuthResponse register(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (request.getEmail() != null && !request.getEmail().isBlank() && userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setName(request.getName());
+
+        User saved = userRepository.save(user);
+        return buildAuthResponse(saved);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
+        return buildAuthResponse(user);
+    }
+
+    // ---------- Google OAuth flows (unchanged, now persisting users) ----------
+
     public AuthResponse loginWithGoogle(GoogleLoginRequest request) throws GeneralSecurityException, IOException {
         var userInfo = googleTokenVerifier.verify(request.getIdToken());
-        return buildAuthResponse(userInfo);
+        var saved = upsertUserFromGoogle(userInfo);
+        return buildAuthResponse(saved);
     }
 
     public AuthResponse loginWithGoogleCode(String code, String codeVerifier) throws GeneralSecurityException, IOException {
@@ -52,7 +88,8 @@ public class AuthService {
                 .body(GoogleTokenResponse.class);
 
         var userInfo = googleTokenVerifier.verify(token.getIdToken());
-        return buildAuthResponse(userInfo);
+        var saved = upsertUserFromGoogle(userInfo);
+        return buildAuthResponse(saved);
     }
 
     private MultiValueMap<String, String> getStringStringMultiValueMap(String code, String codeVerifier) {
@@ -62,7 +99,6 @@ public class AuthService {
         form.add("grant_type", "authorization_code");
         form.add("redirect_uri", redirectUri);
 
-        // Use PKCE if codeVerifier provided, otherwise client secret (server-side web flow)
         if (codeVerifier != null && !codeVerifier.isBlank()) {
             form.add("code_verifier", codeVerifier);
         } else {
@@ -71,39 +107,48 @@ public class AuthService {
         return form;
     }
 
-    private AuthResponse buildAuthResponse(GoogleUserInfo userInfo) {
-        var user = new UserView();
-        user.setId(userInfo.getId());
-        user.setEmail(userInfo.getEmail());
-        user.setName(userInfo.getName());
+    private User upsertUserFromGoogle(GoogleUserInfo userInfo) {
+        String email = userInfo.getEmail();
+        String name = userInfo.getName();
 
-        String jwt = jwtUtil.generateToken(user.getEmail());
-
-        var resp = new AuthResponse();
-        resp.setUser(user);
-        resp.setAccessToken(jwt);
-        resp.setExpiresIn(jwtUtil.getJwtExpirationMs() / 1000);
-        resp.setTokenType("Bearer");
-        return resp;
+        // Prefer matching by email. Set username = email for Google users.
+        return userRepository.findByEmail(email)
+                .map(u -> {
+                    boolean changed = false;
+                    if (name != null && !name.equals(u.getName())) {
+                        u.setName(name);
+                        changed = true;
+                    }
+                    if (u.getUsername() == null || !u.getUsername().equals(email)) {
+                        u.setUsername(email);
+                        changed = true;
+                    }
+                    return changed ? userRepository.save(u) : u;
+                })
+                .orElseGet(() -> {
+                    User u = new User();
+                    u.setEmail(email);
+                    u.setName(name);
+                    u.setUsername(email);
+                    // passwordHash remains null for OAuth-only users
+                    return userRepository.save(u);
+                });
     }
 
-    public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
-        }
-
-        User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()));
-        User saved = userRepository.save(user);
-
-        // Build response (reuse format used by Google login)
-        UserView uv = new UserView();
+    private AuthResponse buildAuthResponse(User saved) {
+        var uv = new UserView();
         uv.setId(saved.getId().toString());
-        uv.setEmail(saved.getUsername());
-        uv.setName(saved.getUsername());
+        // Keep compatibility with existing UserView fields:
+        uv.setEmail(saved.getEmail() != null ? saved.getEmail() : saved.getUsername());
+        uv.setName(saved.getName() != null ? saved.getName() : saved.getUsername());
 
-        String jwt = jwtUtil.generateToken(saved.getUsername());
+        // Use email if present, else username as JWT subject
+        String subject = saved.getEmail() != null && !saved.getEmail().isBlank()
+                ? saved.getEmail()
+                : saved.getUsername();
+        String jwt = jwtUtil.generateToken(subject);
 
-        AuthResponse resp = new AuthResponse();
+        var resp = new AuthResponse();
         resp.setUser(uv);
         resp.setAccessToken(jwt);
         resp.setExpiresIn(jwtUtil.getJwtExpirationMs() / 1000);

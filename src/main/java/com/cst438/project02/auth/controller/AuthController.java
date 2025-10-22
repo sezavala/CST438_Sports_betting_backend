@@ -2,6 +2,7 @@ package com.cst438.project02.auth.controller;
 
 import com.cst438.project02.auth.dto.AuthResponse;
 import com.cst438.project02.auth.dto.GoogleLoginRequest;
+import com.cst438.project02.auth.dto.LoginRequest;
 import com.cst438.project02.auth.dto.RegisterRequest;
 import com.cst438.project02.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -42,5 +43,11 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody @Valid RegisterRequest request) {
         return authService.register(request);
+    }
+
+    // Local (non-OAuth) login
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody @Valid LoginRequest request) {
+        return authService.login(request);
     }
 }
