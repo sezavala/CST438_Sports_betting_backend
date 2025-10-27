@@ -1,5 +1,4 @@
 package com.cst438.project02.entity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -53,7 +52,6 @@ public String getPassword() {
 public void setPassword(String password) {
     this.password = password;
 }
-
 
 }
 

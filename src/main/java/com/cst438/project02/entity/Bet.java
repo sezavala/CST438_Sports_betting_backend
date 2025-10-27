@@ -2,7 +2,14 @@ package com.cst438.project02.entity;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table(name = "bets")
@@ -11,11 +18,10 @@ public class Bet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
     @Column(nullable = false)
