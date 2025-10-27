@@ -15,18 +15,21 @@ import java.util.Date;
 public class JwtUtil {
     @Value("${jwt.SECRET}")
     private String jwtSecret;
+
     @Getter
     @Value("${jwt.EXPIRATION}")
     private long jwtExpirationMs;
+
     private SecretKey key;
 
-    // Initializes key after class is instantiated
     @PostConstruct
     public void init() {
+        if (jwtSecret == null || jwtSecret.isBlank()) {
+            throw new IllegalStateException("Missing jwt.secret (provide env JWT_SECRET or set in application.properties)");
+        }
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Generate a JWT Token
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -36,7 +39,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Validate JWT token
     public boolean validateJwtToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -55,12 +57,10 @@ public class JwtUtil {
         return false;
     }
 
-    // Extract username with token
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    // Ensure token is not expired
     public boolean isTokenExpired(String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
@@ -70,5 +70,4 @@ public class JwtUtil {
             return true;
         }
     }
-
 }
