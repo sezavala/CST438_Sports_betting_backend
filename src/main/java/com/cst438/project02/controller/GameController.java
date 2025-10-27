@@ -92,7 +92,7 @@ public class GameController {
             game.setawayTeam(gameDetails.getawayTeam());
             game.setgameTime(gameDetails.getgameTime());
             game.setresult(gameDetails.getresult());
-            Game updatedGame = gameRepository.save(game);
+            gameRepository.save(game);
             return ResponseEntity.ok("Game updated successfully");
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
