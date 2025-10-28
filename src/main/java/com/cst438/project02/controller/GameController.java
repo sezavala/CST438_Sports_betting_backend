@@ -49,7 +49,7 @@ public class GameController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-    @GetMapping("/team/{teamName}")
+    @GetMapping("/team/{teamId}")
     public ResponseEntity<?> getGamesByTeamName(@PathVariable String teamId) {
         List<Game> games = gameRepository.findByHomeTeamIdOrAwayTeamId(Long.valueOf(teamId), Long.valueOf(teamId));
         if (games.isEmpty()) {
