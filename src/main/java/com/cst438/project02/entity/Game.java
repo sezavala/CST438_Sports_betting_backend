@@ -1,7 +1,10 @@
 package com.cst438.project02.entity;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,6 +54,7 @@ public class Game {
     private String result;
 
     @OneToMany(mappedBy = "game")
+    @JsonManagedReference // Prevents circular reference
     private List<Bet> bets;
 
     public Game() {}
@@ -61,7 +65,7 @@ public class Game {
         this.gameTime = gameTime;
         this.gameDate = gameTime.toLocalDate();
         this.result = result;
-        this.location = homeTeam.getCity(); // Default to home team's city
+        this.location = homeTeam.getCity();
         this.scoreHome = 0;
         this.scoreAway = 0;
     }
