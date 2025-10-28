@@ -2,8 +2,6 @@ package com.cst438.project02.entity;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +28,6 @@ public class Bet {
 
     @ManyToOne
     @JoinColumn(name = "game_id", nullable = false)
-    @JsonBackReference // Prevents circular reference back to Game
     private Game game;
 
     @Column(nullable = false)

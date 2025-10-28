@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +54,7 @@ public class Game {
     private String result;
 
     @OneToMany(mappedBy = "game")
-    @JsonManagedReference // Prevents circular reference
+    @JsonIgnore  // Prevents bets from being serialized when fetching games
     private List<Bet> bets;
 
     public Game() {}
