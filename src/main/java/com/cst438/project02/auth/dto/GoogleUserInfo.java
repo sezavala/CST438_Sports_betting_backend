@@ -1,17 +1,16 @@
 package com.cst438.project02.auth.dto;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-// Google information format
+@AllArgsConstructor
 public class GoogleUserInfo {
-    private String id;
+    private String sub;          // Google's unique user ID
     private String email;
     private String name;
+    private String picture;
     private boolean emailVerified;
-    // Optional pictureUrl: String
 }

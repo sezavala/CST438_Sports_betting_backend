@@ -38,7 +38,7 @@ public class TeamController {
     public ResponseEntity<?> getAllTeams() {
         return ResponseEntity.ok(teamRepository.findAll());
     }
-    @GetMapping("id") //for springboot to get team by id
+    @GetMapping("{id}") //for springboot to get team by id
     public ResponseEntity<?> getTeamById(@PathVariable Long id) {
         Team existingTeam = teamRepository.findById(id).orElse(null);
         if (existingTeam == null) {
