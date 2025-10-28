@@ -70,20 +70,29 @@ public class GameController {
     }
     @PostMapping("/add")
     public ResponseEntity<?> addGame(@RequestBody Map<String, Object> body) {
-        Long homeTeamId = Long.valueOf((Integer) body.get("homeTeamId"));
-        Long awayTeamId = Long.valueOf((Integer) body.get("awayTeamId"));
-        String gameTimeStr = (String) body.get("gameTime");
-        String result = (String) body.get("result");
-        Team homeTeam = teamRepository.findById(homeTeamId).orElse(null);
-        Team awayTeam = teamRepository.findById(awayTeamId).orElse(null);
-        if (homeTeam == null || awayTeam == null) {
-            return ResponseEntity.badRequest().body("Invalid team IDs provided.");
+        try {
+            // Safe type conversion - handles both Integer and Long
+            Long homeTeamId = ((Number) body.get("homeTeamId")).longValue();
+            Long awayTeamId = ((Number) body.get("awayTeamId")).longValue();
+            String gameTimeStr = (String) body.get("gameTime");
+            String result = (String) body.get("result");
+
+            Team homeTeam = teamRepository.findById(homeTeamId).orElse(null);
+            Team awayTeam = teamRepository.findById(awayTeamId).orElse(null);
+
+            if (homeTeam == null || awayTeam == null) {
+                return ResponseEntity.badRequest().body("Invalid team IDs provided.");
+            }
+
+            LocalDateTime gameTime = LocalDateTime.parse(gameTimeStr);
+            Game newGame = new Game(homeTeam, awayTeam, gameTime, result);
+            gameRepository.save(newGame);
+
+            return ResponseEntity.ok("Game added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("Error adding game: " + e.getMessage());
         }
-        LocalDateTime gameTime = LocalDateTime.parse(gameTimeStr);
-        Game newGame = new Game(homeTeam, awayTeam, gameTime, result);
-        gameRepository.save(newGame);
-        return ResponseEntity.ok("Game added successfully");
-        
     }
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateGame(@PathVariable Long id, @RequestBody Game gameDetails) {
