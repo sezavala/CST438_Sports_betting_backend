@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface favTeamRepository extends JpaRepository<favTeam, Long> {
+public interface FavTeamRepository extends JpaRepository<favTeam, Long> {
 
     //Find the favorite teams for a specific user
     List<favTeam> findByUserId(Long userId);
