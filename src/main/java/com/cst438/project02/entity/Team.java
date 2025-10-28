@@ -1,12 +1,9 @@
 package com.cst438.project02.entity;
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -21,16 +18,11 @@ public class Team {
 
     @Column(nullable = false)
     private String name;
-
     @Column(nullable = false)
     private String sport;
-
     @Column(nullable = false)
     private String city;
-
-    @OneToMany(mappedBy = "homeTeam")
-    private List<Game> homeGames;
-
+    
 
     public Team() {}
 
@@ -39,7 +31,6 @@ public class Team {
         this.sport = sport;
         this.city = city;
     }
-
     public Long getId() {
         return id;
     }
