@@ -33,7 +33,7 @@ public class GoogleTokenVerifier {
             GoogleIdToken.Payload payload = googleIdToken.getPayload();
 
             GoogleUserInfo userInfo = new GoogleUserInfo();
-            userInfo.setId(payload.getSubject());
+            userInfo.setSub(payload.getSubject());
             userInfo.setName((String) payload.get("name"));
             userInfo.setEmail(payload.getEmail());
             userInfo.setEmailVerified(payload.getEmailVerified());
