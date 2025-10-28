@@ -1,24 +1,26 @@
 package com.cst438.project02.controller;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.cst438.project02.repository.TeamRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import com.cst438.project02.entity.Game;
-import com.cst438.project02.entity.Team;
-import com.cst438.project02.repository.GameRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cst438.project02.entity.Game;
+import com.cst438.project02.entity.Team;
+import com.cst438.project02.repository.GameRepository;
+import com.cst438.project02.repository.TeamRepository;
 
 
 
@@ -68,14 +70,14 @@ public class GameController {
             return ResponseEntity.ok(games);
         }
     }
-    @PostMapping("/add")
+   @PostMapping("/add")
     public ResponseEntity<?> addGame(@RequestBody Map<String, Object> body) {
         try {
-            // Safe type conversion - handles both Integer and Long
             Long homeTeamId = ((Number) body.get("homeTeamId")).longValue();
             Long awayTeamId = ((Number) body.get("awayTeamId")).longValue();
             String gameTimeStr = (String) body.get("gameTime");
             String result = (String) body.get("result");
+            String location = (String) body.getOrDefault("location", "");
 
             Team homeTeam = teamRepository.findById(homeTeamId).orElse(null);
             Team awayTeam = teamRepository.findById(awayTeamId).orElse(null);
@@ -86,6 +88,20 @@ public class GameController {
 
             LocalDateTime gameTime = LocalDateTime.parse(gameTimeStr);
             Game newGame = new Game(homeTeam, awayTeam, gameTime, result);
+            
+            // Set location if provided, otherwise constructor already set it to home team's city
+            if (location != null && !location.isEmpty()) {
+                newGame.setLocation(location);
+            }
+            
+            // Set scores if provided
+            if (body.containsKey("scoreHome")) {
+                newGame.setScoreHome(((Number) body.get("scoreHome")).intValue());
+            }
+            if (body.containsKey("scoreAway")) {
+                newGame.setScoreAway(((Number) body.get("scoreAway")).intValue());
+            }
+            
             gameRepository.save(newGame);
 
             return ResponseEntity.ok("Game added successfully");
@@ -94,6 +110,7 @@ public class GameController {
                     .body("Error adding game: " + e.getMessage());
         }
     }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateGame(@PathVariable Long id, @RequestBody Game gameDetails) {
         return gameRepository.findById(id).map(game -> {
@@ -101,6 +118,9 @@ public class GameController {
             game.setAwayTeam(gameDetails.getAwayTeam());
             game.setGameTime(gameDetails.getGameTime());
             game.setGameDate(gameDetails.getGameDate());
+            game.setLocation(gameDetails.getLocation());
+            game.setScoreHome(gameDetails.getScoreHome());
+            game.setScoreAway(gameDetails.getScoreAway());
             game.setResult(gameDetails.getResult());
             gameRepository.save(game);
             return ResponseEntity.ok("Game updated successfully");

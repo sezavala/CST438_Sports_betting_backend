@@ -1,6 +1,7 @@
 package com.cst438.project02.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,12 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Table(name = "games")
@@ -36,9 +35,17 @@ public class Game {
     @Column(name = "game_time", nullable = false)
     private LocalDateTime gameTime;
 
-    // ADD THIS
     @Column(name = "game_date", nullable = false)
     private LocalDate gameDate;
+
+    @Column(name = "location", nullable = false)
+    private String location;
+
+    @Column(name = "score_home")
+    private Integer scoreHome;
+
+    @Column(name = "score_away")
+    private Integer scoreAway;
 
     @Column(nullable = false)
     private String result;
@@ -52,10 +59,10 @@ public class Game {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.gameTime = gameTime;
-        this.gameDate = gameTime.toLocalDate(); // Extract date from gameTime
+        this.gameDate = gameTime.toLocalDate();
         this.result = result;
+        this.location = homeTeam.getCity(); // Default to home team's city
+        this.scoreHome = 0;
+        this.scoreAway = 0;
     }
-
 }
-
-
