@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/game")
-@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
+@CrossOrigin("*")
 public class GameController {
 
     @Autowired

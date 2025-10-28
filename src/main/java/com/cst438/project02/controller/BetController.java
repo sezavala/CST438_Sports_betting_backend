@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/bet")
-@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
 public class BetController {
     @Autowired
     private BetRepository betRepository;

@@ -15,7 +15,7 @@ import com.cst438.project02.repository.TeamRepository;
 
 @RestController
 @RequestMapping("/team")
-@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
+@CrossOrigin("*")
 public class TeamController {
     @Autowired
     private TeamRepository teamRepository;
