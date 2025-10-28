@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cst438.project02.entity.User;
 import com.cst438.project02.repository.UserRepository;
 
+// User
 @RestController
 @RequestMapping("/user")
 @CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
