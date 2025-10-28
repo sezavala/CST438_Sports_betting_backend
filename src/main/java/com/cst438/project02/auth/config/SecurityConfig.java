@@ -25,7 +25,6 @@ public class SecurityConfig {
         return (SecurityFilterChain) http
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/v1/auth/**", "/error").permitAll();
-                    auth.requestMatchers("/error").permitAll();
                     auth.requestMatchers("/h2-console/**").permitAll();
                     auth.requestMatchers("https://developers.google.com/oauthplayground/*").permitAll();
                     auth.anyRequest().authenticated();
