@@ -97,10 +97,11 @@ public class GameController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateGame(@PathVariable Long id, @RequestBody Game gameDetails) {
         return gameRepository.findById(id).map(game -> {
-            game.sethomeTeam(gameDetails.gethomeTeam());
-            game.setawayTeam(gameDetails.getawayTeam());
-            game.setgameTime(gameDetails.getgameTime());
-            game.setresult(gameDetails.getresult());
+            game.setHomeTeam(gameDetails.getHomeTeam());
+            game.setAwayTeam(gameDetails.getAwayTeam());
+            game.setGameTime(gameDetails.getGameTime());
+            game.setGameDate(gameDetails.getGameDate());
+            game.setResult(gameDetails.getResult());
             gameRepository.save(game);
             return ResponseEntity.ok("Game updated successfully");
         }).orElseGet(() -> ResponseEntity.notFound().build());
