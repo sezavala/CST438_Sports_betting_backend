@@ -26,7 +26,7 @@ public class Game {
     @ManyToOne //too use from team entity
     @JoinColumn(name = "away_team_id", nullable = false)
     private Team awayTeam;
-    @Column(nullable = false)
+    @Column(name = "game_time", nullable = false)
     private LocalDateTime gameTime;
     @Column(nullable = false)
     private String result;
