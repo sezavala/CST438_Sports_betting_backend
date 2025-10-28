@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -29,11 +29,22 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> {
+                    // Public endpoints (no auth required)
                     auth.requestMatchers(
                             "/api/v1/auth/**",
                             "/error",
                             "/h2-console/**"
                     ).permitAll();
+
+                    // All other endpoints require authentication
+                    auth.requestMatchers(
+                            "/team/**",
+                            "/game/**",
+                            "/bet/**",
+                            "/favTeam/**",
+                            "/user/**"
+                    ).authenticated();
+
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session
