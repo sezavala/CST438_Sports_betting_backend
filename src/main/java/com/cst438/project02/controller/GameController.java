@@ -43,7 +43,7 @@ public class GameController {
     public ResponseEntity<?> getAllGames() {
         return ResponseEntity.ok(gameRepository.findAll());
     }
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getGameById(@PathVariable Long id) {
         return gameRepository.findById(id)
                 .map(ResponseEntity::ok)
