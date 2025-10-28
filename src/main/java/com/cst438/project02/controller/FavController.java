@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/favTeam")
-@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")  // Adjust this for your frontend URL
+@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
 public class FavController {
 
     @Autowired
@@ -72,7 +72,30 @@ public class FavController {
         }
     }
 
-    // Optional: GET endpoint to retrieve all favorites for a user
+    @PutMapping("/{userId}/{teamId}")
+    public ResponseEntity<?> updateFavoriteTeam(
+            @PathVariable Long userId,
+            @PathVariable Long teamId,
+            @RequestBody FavoriteTeamRequest request) {
+        try {
+            Optional<favTeam> existing = favoriteTeamRepository.findByUserIdAndTeamId(userId, teamId);
+
+            if (existing.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Favorite team not found");
+            }
+
+            favTeam fav = existing.get();
+            fav.setTeamName(request.getTeamName()); // example of update
+            favTeam updated = favoriteTeamRepository.save(fav);
+
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating favorite team: " + e.getMessage());
+        }
+    }
+
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getFavoriteTeams(@PathVariable Long userId) {
         try {
@@ -86,7 +109,6 @@ public class FavController {
     }
 }
 
-// Request DTO class for POST endpoint
 class FavoriteTeamRequest {
     private Long userId;
     private Long teamId;
