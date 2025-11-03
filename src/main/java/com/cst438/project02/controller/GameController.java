@@ -26,7 +26,7 @@ import com.cst438.project02.repository.TeamRepository;
 
 @RestController
 @RequestMapping("/game")
-@CrossOrigin(origins = "https://project-02-20fa5120c543.herokuapp.com/")
+@CrossOrigin("*")
 public class GameController {
 
     @Autowired
